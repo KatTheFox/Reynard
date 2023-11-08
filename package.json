@@ -1,0 +1,33 @@
+{
+  "name": "reynard",
+  "version": "1.0.0",
+  "description": "A multi-purpose discord bot",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "github:KatTheFox/Reynard"
+  },
+  "author": "Katrina Renarde <katthefoxmaid@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
+    "fs-extra": "^11.1.1",
+    "luxon": "^3.4.3",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.2.0",
+    "@commitlint/config-conventional": "^18.1.0",
+    "@types/fs-extra": "^11.0.2",
+    "@types/luxon": "^3.3.2",
+    "husky": "^8.0.3",
+    "isaacscript-lint": "^6.0.0",
+    "isaacscript-tsconfig": "^5.0.0"
+  }
+}
