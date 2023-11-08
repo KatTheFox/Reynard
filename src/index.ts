@@ -4,9 +4,8 @@ import { config } from "dotenv";
 
 config();
 const token = process.env["DISCORD_TOKEN"];
-if (token == undefined) {
-  throw new Error("No discord token found in env!");
-} else {
+if (token === undefined) throw new Error("No discord token found in env!");
+else {
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
   client.once(Events.ClientReady, (c) => {
     console.log(`Logged in as ${c.user.tag}`);
@@ -14,19 +13,19 @@ if (token == undefined) {
   client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
     const command = commands.get(interaction.commandName);
-    if (command == undefined) {
+    if (command === undefined) {
       console.error(`no such command ${interaction.commandName}`);
       return;
     }
     try {
       await command.execute(interaction);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
       await interaction.reply({
         content: "There was an error executing this command",
         ephemeral: true,
       });
     }
   });
-  client.login(token);
+  void client.login(token);
 }

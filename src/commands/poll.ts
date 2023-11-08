@@ -1,23 +1,26 @@
+import type {
+  ChatInputCommandInteraction,
+  Message,
+  MessageReaction,
+  PrivateThreadChannel,
+  PublicThreadChannel,
+  TextChannel,
+} from "discord.js";
 import {
   APIInteractionDataResolvedChannel,
   CategoryChannel,
   Channel,
   ChannelType,
-  ChatInputCommandInteraction,
   CommandInteraction,
   Embed,
   EmbedBuilder,
   ForumChannel,
-  Message,
-  MessageReaction,
   NewsChannel,
-  PrivateThreadChannel,
-  PublicThreadChannel,
   SlashCommandBuilder,
   StageChannel,
-  TextChannel,
   VoiceChannel,
 } from "discord.js";
+
 export const pollCommand = {
   data: new SlashCommandBuilder()
     .setName("poll")
@@ -191,31 +194,28 @@ export const pollCommand = {
         .setRequired(false)
     )
     .setDescription("Create a poll."),
-  async execute(interaction: ChatInputCommandInteraction) {
-    let responses: PollConfig = getPollConfig(interaction);
-    let channel =
-      responses.channel == undefined ? interaction.channel : responses.channel;
-    if (channel == null) {
-      throw new TypeError("Null channel!");
-    }
-    let body = `1️⃣: ${responses.options[0]}`;
-    for (let i = 1; i < responses.options.length; i++) {
-      body += `\n${emoji[i]}: ${responses.options[i]}`;
-    }
+  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    const responses: PollConfig = getPollConfig(interaction);
+    const channel = responses.channel ?? interaction.channel;
+    if (channel === null) throw new TypeError("Null channel!");
 
-    let pollMsg = await channel.send({
+    let body = `1️⃣: ${responses.options[0]}`;
+    for (let i = 1; i < responses.options.length; i++)
+      body += `\n${emoji[i]}: ${responses.options[i]}`;
+
+    const pollMsg = await channel.send({
       content: responses.text,
       embeds: [
         new EmbedBuilder().setTitle(responses.question).setDescription(body),
       ],
     });
-    for (let i = 0; i < responses.options.length; i++) {
+    for (let i = 0; i < responses.options.length; i++)
+      // eslint-disable-next-line no-await-in-loop, @typescript-eslint/no-non-null-assertion
       await pollMsg.react(emoji[i]!);
-    }
-    if (responses.minutes > 0) {
-      pollClose(responses, pollMsg);
-    }
-    interaction.reply({
+
+    if (responses.minutes > 0) void pollClose(responses, pollMsg);
+
+    void interaction.reply({
       content: `Poll created at ${pollMsg.url}`,
       ephemeral: true,
     });
@@ -223,27 +223,23 @@ export const pollCommand = {
 };
 async function pollClose(responses: PollConfig, msg: Message) {
   await delay(responses.minutes * 5000);
-  let pollMsg = await msg.fetch(true);
-  let reactions = msg.reactions.cache;
+  const pollMsg = await msg.fetch(true);
+  const reactions = msg.reactions.cache;
   let highestn = 0;
-  let reacts: MessageReaction[] = [];
-  reactions.forEach((element) => {
+  const reacts: MessageReaction[] = [];
+  for (const element of reactions.values()) {
     reacts.push(element);
-    if (element.count > highestn) {
-      highestn = element.count;
-    }
-  });
-  let highests = reactions.filter((v) => v.count == highestn);
-  let results = highests.first(highests.size);
+    if (element.count > highestn) highestn = element.count;
+  }
+  const highests = reactions.filter((v) => v.count === highestn);
+  const results = highests.first(highests.size);
   if (
-    results.reduce((a: number, b: MessageReaction) => {
-      return a + b.count - 1;
-    }, 0) == 0
+    results.reduce((a: number, b: MessageReaction) => a + b.count - 1, 0) === 0
   ) {
     let body = `1️⃣: ${responses.options[0]}`;
-    for (let i = 1; i < responses.options.length; i++) {
+    for (let i = 1; i < responses.options.length; i++)
       body += `\n${emoji[i]}: ${responses.options[i]}`;
-    }
+
     await pollMsg.edit({
       embeds: [
         new EmbedBuilder()
@@ -253,10 +249,10 @@ async function pollClose(responses: PollConfig, msg: Message) {
     });
   } else {
     let body = `1️⃣: ${responses.options[0]}`;
-    for (let i = 1; i < responses.options.length; i++) {
+    for (let i = 1; i < responses.options.length; i++)
       body += `\n${emoji[i]}: ${responses.options[i]}`;
-    }
-    let msg = `Options:\n${body}\n\nResult: ${getWinnersString(
+
+    const resultMsg = `Options:\n${body}\n\nResult: ${getWinnersString(
       results,
       responses
     )}\n\nDetails:${longResults(
@@ -265,55 +261,57 @@ async function pollClose(responses: PollConfig, msg: Message) {
     )}`;
     await pollMsg.edit({
       embeds: [
-        new EmbedBuilder().setTitle(responses.question).setDescription(msg),
+        new EmbedBuilder()
+          .setTitle(responses.question)
+          .setDescription(resultMsg),
       ],
     });
   }
 }
 function getWinnersString(results: MessageReaction[], responses: PollConfig) {
-  if (results.length == 1) {
+  if (results.length === 1)
     return `'${
       responses.options[emoji.indexOf(results[0]?.emoji.name ?? "")]
     }' wins.`;
-  } else if (results.length == 2) {
+  if (results.length === 2)
     return `'${
       responses.options[emoji.indexOf(results[0]?.emoji.name ?? "")]
     }' and '${
       responses.options[emoji.indexOf(results[1]?.emoji.name ?? "")]
     }' have tied.`;
-  } else {
-    let r = "";
-    for (let i = 0; i < results.length - 1; i++) {
-      r += `'${
-        responses.options[emoji.indexOf(results[i]?.emoji.name ?? "")]
-      }', `;
-    }
-    r += `and '${
-      responses.options[
-        emoji.indexOf(results[results.length - 1]?.emoji.name ?? "")
-      ]
-    }' have tied.`;
-    return r;
-  }
+
+  let r = "";
+  for (let i = 0; i < results.length - 1; i++)
+    r += `'${
+      responses.options[emoji.indexOf(results[i]?.emoji.name ?? "")]
+    }', `;
+
+  r += `and '${
+    responses.options[emoji.indexOf(results.at(-1)?.emoji.name ?? "")]
+  }' have tied.`;
+  return r;
 }
 function longResults(results: MessageReaction[], options: string[]): string {
-  let totalReactions = results.reduce((a: number, b: MessageReaction) => {
-    return a + b.count - 1;
-  }, 0);
+  const totalReactions = results.reduce(
+    (a: number, b: MessageReaction) => a + b.count - 1,
+    0
+  );
   let r = "";
-  results.forEach((element) => {
+  for (const element of results)
     r += `\n${element.emoji.name} ${
       options[emoji.indexOf(element.emoji.name ?? "")]
     }: ${(((element.count - 1) / totalReactions) * 100)
       .toString()
-      .substring(0, 5)}%`;
-  });
+      .slice(0, 5)}%`;
+
   return r;
 }
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function delay(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
-let emoji = [
+const emoji = [
   "1️⃣",
   "2️⃣",
   "3️⃣",
@@ -335,11 +333,10 @@ let emoji = [
   "🇮",
 ];
 function getOptions(i: ChatInputCommandInteraction): string[] {
-  let r: string[] = [];
-  for (let j = 1; j < 20; j++) {
-    r.push(i.options.getString(`option${j}`) ?? "");
-  }
-  return r.filter((v) => !!v);
+  const r: string[] = [];
+  for (let j = 1; j < 20; j++) r.push(i.options.getString(`option${j}`) ?? "");
+
+  return r.filter(Boolean);
 }
 function getPollConfig(interaction: ChatInputCommandInteraction): PollConfig {
   return {
@@ -358,10 +355,10 @@ function getPollConfig(interaction: ChatInputCommandInteraction): PollConfig {
       ]) ?? undefined,
   };
 }
-type PollConfig = {
+interface PollConfig {
   text: string;
   question: string;
   options: string[];
   minutes: number;
-  channel?: TextChannel | PrivateThreadChannel | PublicThreadChannel<boolean>;
-};
+  channel?: TextChannel | PrivateThreadChannel | PublicThreadChannel;
+}
