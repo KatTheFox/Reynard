@@ -15,5 +15,5 @@ module.exports = {
   },
 
   // We modify the linting rules from the base for some specific things.
-  rules: { "no-bitwise": 0, "no-param-reassign": ['error', { props: "false" }] },
+  rules: { "no-bitwise": 0, "no-param-reassign": ['error', { props: false }] },
 };
