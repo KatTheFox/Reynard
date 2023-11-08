@@ -1,6 +1,6 @@
 # Reynard
 
-Reynard is a multi-purpose discord bot, made out of frustration with the state of the discord bot ecosystem. Almost all bots nowadays lock critical features behind paid premium subscriptions, require you to vote on top.gg to unlock others, and/or get bought out (by botlabs/bluestacks) and start doing shady things. So, I started working on my own bot, with the purpose of being the opposite of all that.
+Reynard is a multi-purpose discord bot, made out of frustration with the state of the discord bot ecosystem. Almost all bots nowadays lock critical features behind paid premium subscriptions, require you to vote on top.gg to unlock others, and/or get bought out (botlabs/bluestacks, for example) and start doing shady things. So, I started working on my own bot, with the purpose of being the opposite of all that.
 
 ## What it is and isn't
 
