@@ -6,20 +6,7 @@ import type {
   PublicThreadChannel,
   TextChannel,
 } from "discord.js";
-import {
-  APIInteractionDataResolvedChannel,
-  CategoryChannel,
-  Channel,
-  ChannelType,
-  CommandInteraction,
-  Embed,
-  EmbedBuilder,
-  ForumChannel,
-  NewsChannel,
-  SlashCommandBuilder,
-  StageChannel,
-  VoiceChannel,
-} from "discord.js";
+import { ChannelType, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 export const pollCommand = {
   data: new SlashCommandBuilder()

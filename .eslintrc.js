@@ -15,5 +15,12 @@ module.exports = {
   },
 
   // We modify the linting rules from the base for some specific things.
-  rules: { "no-bitwise": 0, "no-param-reassign": ["error", { props: false }],"curly":["error","multi"],"n/file-extension-in-import":"off" , "no-void":"off"},
+  rules: {
+     "no-bitwise": 0, 
+     "no-param-reassign": ["error", { props: false }],
+     "curly":["error","multi"],
+     "n/file-extension-in-import":"off" ,
+     "no-void":"off",
+     "isaacscript/no-void-return-type":"off"
+  },
 };
