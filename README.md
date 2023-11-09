@@ -19,7 +19,7 @@ Currently, the only feature the bot has is a poll command, since I literally sta
 
 ## What features are planned, then?
 
-I plan to add moderation features like mutes and bans, as well as reaction roles and an autoresponder (intended for use in forum channels), plus probably a logger if I get around to it.
+I plan to add reaction roles and an autoresponder (intended for use in forum channels), plus probably a logger if I get around to it. This isn't an exhaustive list, and I'll be adding to it as I need things.
 
 ## Is this related to the 'Reynard' bot on top.gg?
 
