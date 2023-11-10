@@ -1,28 +1,31 @@
 import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
 import { REST, Routes } from "discord.js";
 import { commands } from "./commands/commands";
-import { config } from "dotenv";
+import { config, persistantDataHandler } from "./persistantDataHandler";
 
-config();
-const json = [] as RESTPostAPIChatInputApplicationCommandsJSONBody[];
-for (const command of commands.values()) json.push(command.data.toJSON());
+persistantDataHandler
+  .init()
+  .then((_) => {
+    const json = [] as RESTPostAPIChatInputApplicationCommandsJSONBody[];
+    for (const command of commands.values()) json.push(command.data.toJSON());
 
-const token = process.env["DISCORD_TOKEN"];
-const appID = process.env["APPLICATION_ID"];
-if (token === undefined) throw new Error("No discord token found in env!");
-else if (appID === undefined) throw new Error("No client id found in env!");
-else {
-  const rest = new REST({ version: "10" }).setToken(token);
-  // eslint-disable-next-line unicorn/prefer-top-level-await
-  void (async () => {
-    try {
-      console.log(`Started deploying ${json.length} commands`);
-      void (await rest.put(Routes.applicationCommands(appID), {
-        body: json,
-      }));
-      console.log(`Successfully deployed ${json.length} commands`);
-    } catch (error) {
-      console.error(error);
+    if (config.token === "") throw new Error("No discord token in config!");
+    else if (config.appID === "") throw new Error("No client id in config!");
+    else {
+      const rest = new REST({ version: "10" }).setToken(config.token);
+      void (async () => {
+        try {
+          console.log(`Started deploying ${json.length} commands`);
+          void (await rest.put(Routes.applicationCommands(config.appID), {
+            body: json,
+          }));
+          console.log(`Successfully deployed ${json.length} commands`);
+        } catch (error) {
+          console.error(error);
+        }
+      })();
     }
-  })();
-}
+  })
+  .catch((error) => {
+    console.error(error);
+  });

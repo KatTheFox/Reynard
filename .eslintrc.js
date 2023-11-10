@@ -21,6 +21,7 @@ module.exports = {
      "curly":["error","multi"],
      "n/file-extension-in-import":"off" ,
      "no-void":"off",
-     "isaacscript/no-void-return-type":"off"
+     "isaacscript/no-void-return-type":"off",
+     "unicorn/prefer-top-level-await":"off"
   },
 };

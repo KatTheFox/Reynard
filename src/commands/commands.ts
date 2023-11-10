@@ -3,6 +3,7 @@ import type {
   SlashCommandBuilder,
 } from "discord.js";
 import { pollCommand } from "./poll";
+import { rrMenuCommand } from "./createRRMenu";
 
 export const commands = new Map<
   string,
@@ -10,4 +11,7 @@ export const commands = new Map<
     data: SlashCommandBuilder;
     execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
   }
->([[pollCommand.data.name, pollCommand]]);
+>([
+  [pollCommand.data.name, pollCommand],
+  [rrMenuCommand.data.name, rrMenuCommand],
+]);
