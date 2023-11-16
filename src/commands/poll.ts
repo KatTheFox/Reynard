@@ -7,8 +7,9 @@ import type {
   TextChannel,
 } from "discord.js";
 import { ChannelType, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import type { Command } from "../types";
 
-export const pollCommand = {
+export const poll: Command = {
   data: new SlashCommandBuilder()
     .setName("poll")
     .addStringOption((option) =>
@@ -182,7 +183,14 @@ export const pollCommand = {
     )
     .setDescription("Create a poll."),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    const responses: PollConfig = getPollConfig(interaction);
+    const responses = await getPollConfig(interaction);
+    if (responses === undefined) {
+      await interaction.reply({
+        content: "There was an error executing this command.",
+        ephemeral: true,
+      });
+      return;
+    }
     const channel = responses.channel ?? interaction.channel;
     if (channel === null) throw new TypeError("Null channel!");
 
@@ -325,7 +333,36 @@ function getOptions(i: ChatInputCommandInteraction): string[] {
 
   return r.filter(Boolean);
 }
-function getPollConfig(interaction: ChatInputCommandInteraction): PollConfig {
+async function getPollConfig(
+  interaction: ChatInputCommandInteraction
+): Promise<PollConfig | undefined> {
+  const { id } = interaction.options.getChannel("channel", true, [
+    ChannelType.GuildText,
+    ChannelType.PublicThread,
+    ChannelType.PrivateThread,
+  ]);
+  const channel = await interaction.client.channels.fetch(id);
+  if (channel === null) {
+    await interaction.reply({
+      content: "Unable to access channel (probably a permission issue)",
+      ephemeral: true,
+    });
+    return;
+  }
+  if (
+    !(
+      channel.type === ChannelType.GuildText ||
+      channel.type === ChannelType.PublicThread ||
+      channel.type === ChannelType.PrivateThread
+    )
+  ) {
+    await interaction.reply({
+      content:
+        "Channel is somehow not text-based while also being a text channel. Confounding.",
+      ephemeral: true,
+    });
+    return;
+  }
   return {
     text: interaction.options.getString("text", true),
     question: interaction.options.getString("question", true),
@@ -334,12 +371,7 @@ function getPollConfig(interaction: ChatInputCommandInteraction): PollConfig {
       (interaction.options.getInteger("minutes") ?? 0) +
       (interaction.options.getInteger("hours") ?? 0) * 60 +
       (interaction.options.getInteger("days") ?? 0) * 1440,
-    channel:
-      interaction.options.getChannel("channel", false, [
-        ChannelType.PublicThread,
-        ChannelType.PrivateThread,
-        ChannelType.GuildText,
-      ]) ?? undefined,
+    channel,
   };
 }
 interface PollConfig {

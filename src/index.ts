@@ -1,8 +1,11 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
-import { commands } from "./commands/commands";
-import { config, persistantDataHandler } from "./persistantDataHandler";
+import { Client, GatewayIntentBits } from "discord.js";
+import {
+  config,
+  persistentDataHandler,
+} from "./features/technical/persistentDataHandler";
+import { events } from "./events/events";
 
-persistantDataHandler
+persistentDataHandler
   .init()
   .then((_) => {
     if (config.token === "")
@@ -13,28 +16,16 @@ persistantDataHandler
           GatewayIntentBits.Guilds,
           GatewayIntentBits.GuildMembers,
           GatewayIntentBits.GuildMessageReactions,
+          GatewayIntentBits.GuildMessages,
+          GatewayIntentBits.MessageContent,
         ],
       });
-      client.once(Events.ClientReady, (c) => {
-        console.log(`Logged in as ${c.user.tag}`);
-      });
-      client.on(Events.InteractionCreate, async (interaction) => {
-        if (!interaction.isChatInputCommand()) return;
-        const command = commands.get(interaction.commandName);
-        if (command === undefined) {
-          console.error(`no such command ${interaction.commandName}`);
-          return;
-        }
-        try {
-          await command.execute(interaction);
-        } catch (error) {
-          console.error(error);
-          await interaction.reply({
-            content: "There was an error executing this command",
-            ephemeral: true,
-          });
-        }
-      });
+
+      for (const eventHandler of events)
+        if (eventHandler.once ?? false)
+          client.once(eventHandler.event, eventHandler.execute);
+        else client.on(eventHandler.event, eventHandler.execute);
+
       void client.login(config.token);
     }
   })

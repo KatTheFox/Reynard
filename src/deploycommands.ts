@@ -1,9 +1,12 @@
 import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
 import { REST, Routes } from "discord.js";
 import { commands } from "./commands/commands";
-import { config, persistantDataHandler } from "./persistantDataHandler";
+import {
+  config,
+  persistentDataHandler,
+} from "./features/technical/persistentDataHandler";
 
-persistantDataHandler
+persistentDataHandler
   .init()
   .then((_) => {
     const json = [] as RESTPostAPIChatInputApplicationCommandsJSONBody[];

@@ -1,17 +1,10 @@
-import type {
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-} from "discord.js";
-import { pollCommand } from "./poll";
-import { rrMenuCommand } from "./createRRMenu";
+import { poll } from "./poll";
+import { createRRMenu } from "./createRRMenu";
+import type { Command } from "../types";
+import { requireSpoiler } from "./requireSpoiler";
 
-export const commands = new Map<
-  string,
-  {
-    data: SlashCommandBuilder;
-    execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
-  }
->([
-  [pollCommand.data.name, pollCommand],
-  [rrMenuCommand.data.name, rrMenuCommand],
+export const commands = new Map<string, Command>([
+  [poll.data.name, poll],
+  [createRRMenu.data.name, createRRMenu],
+  [requireSpoiler.data.name, requireSpoiler],
 ]);

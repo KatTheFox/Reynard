@@ -8,11 +8,12 @@ import type {
 } from "discord.js";
 import { ChannelType, SlashCommandBuilder, parseEmoji } from "discord.js";
 import {
-  persistantData,
-  persistantDataHandler,
-} from "../persistantDataHandler";
+  persistentData,
+  persistentDataHandler,
+} from "../features/technical/persistentDataHandler";
+import type { Command } from "../types";
 
-export const rrMenuCommand = {
+export const createRRMenu: Command = {
   data: new SlashCommandBuilder()
     .setName("rrmenu")
     .addStringOption((option) =>
@@ -162,6 +163,13 @@ export const rrMenuCommand = {
     .setDescription("Creates a reaction role message"),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const options = await getOptions(interaction);
+    if (options === undefined) {
+      await interaction.reply({
+        content: "There was an error executing this command.",
+        ephemeral: true,
+      });
+      return;
+    }
     let body = `**Reaction Roles: ${options.title}**\nReact to give yourself the corresponding role. Remove the reaction to remove the role.`;
     for (const x of options.roles.keys()) console.log(x);
     if (!allValidEmoji(options.roles.keys())) {
@@ -187,8 +195,8 @@ export const rrMenuCommand = {
         content: body,
       });
 
-      persistantData.roleMenus.set(menuMsg, roles);
-      await persistantDataHandler.saveData();
+      persistentData.roleMenus.set(menuMsg, roles);
+      await persistentDataHandler.saveData();
       await interaction.reply({
         content: `Menu created at ${menuMsg.url}`,
         ephemeral: true,
@@ -210,7 +218,7 @@ function allValidEmoji(srcEmoji: IterableIterator<string>): boolean {
 }
 async function getOptions(
   interaction: ChatInputCommandInteraction
-): Promise<RRMenuOptions> {
+): Promise<RRMenuOptions | undefined> {
   const roles = new Map<string, Role>();
   let role: Role | APIRole | undefined;
   let emoji: string | undefined;
@@ -224,13 +232,37 @@ async function getOptions(
       if (role !== undefined) roles.set(emoji, role);
     }
   }
+
+  const { id } = interaction.options.getChannel("channel", true, [
+    ChannelType.GuildText,
+    ChannelType.PublicThread,
+    ChannelType.PrivateThread,
+  ]);
+  const channel = await interaction.client.channels.fetch(id);
+  if (channel === null) {
+    await interaction.reply({
+      content: "Unable to access channel (probably a permission issue)",
+      ephemeral: true,
+    });
+    return;
+  }
+  if (
+    !(
+      channel.type === ChannelType.GuildText ||
+      channel.type === ChannelType.PublicThread ||
+      channel.type === ChannelType.PrivateThread
+    )
+  ) {
+    await interaction.reply({
+      content:
+        "Channel is somehow not text-based while also being a text channel. Confounding.",
+      ephemeral: true,
+    });
+    return;
+  }
   return {
     title: interaction.options.getString("title", true),
-    channel: interaction.options.getChannel("channel", true, [
-      ChannelType.GuildText,
-      ChannelType.PublicThread,
-      ChannelType.PrivateThread,
-    ]),
+    channel,
     roles,
   };
 }
