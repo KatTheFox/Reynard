@@ -11,6 +11,5 @@ export interface Command {
 export interface EventHandler {
   event: keyof ClientEvents;
   once?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   execute: (...args: any[]) => void | Promise<void>;
 }

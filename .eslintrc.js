@@ -24,6 +24,7 @@ module.exports = {
      "isaacscript/no-void-return-type":"off",
      "unicorn/prefer-top-level-await":"off",
      "isaacscript/no-mutable-return":"off",
-     "isaacscript/prefer-readonly-parameter-types":"off"
+     "isaacscript/prefer-readonly-parameter-types":"off",
+     "@typescript-eslint/no-explicit-any":["warn",{ignoreRestArgs:true}]
   },
 };
