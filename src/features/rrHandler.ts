@@ -16,12 +16,10 @@ export async function handleReaction(
   const reaction = rawReaction.partial
     ? await rawReaction.fetch()
     : rawReaction;
-  const user = rawUser.partial ? await rawUser.fetch() : rawUser;
   const roleMenu = persistentData.roleMenus.get(reaction.message.id);
-  if (roleMenu === undefined) {
-    void log("rolemenu undefined!");
-    return;
-  }
+  if (roleMenu === undefined) return;
+  const user = rawUser.partial ? await rawUser.fetch() : rawUser;
+
   const role = roleMenu.get(reaction.emoji.id ?? reaction.emoji.toString());
   if (role !== undefined) {
     const message = await reaction.message.fetch();
