@@ -22,6 +22,8 @@ module.exports = {
      "n/file-extension-in-import":"off" ,
      "no-void":"off",
      "isaacscript/no-void-return-type":"off",
-     "unicorn/prefer-top-level-await":"off"
+     "unicorn/prefer-top-level-await":"off",
+     "isaacscript/no-mutable-return":"off",
+     "isaacscript/prefer-readonly-parameter-types":"off"
   },
 };

@@ -200,7 +200,7 @@ export const createRRMenu: Command = {
         content: body,
       });
 
-      persistentData.roleMenus.set(menuMsg, roles);
+      persistentData.roleMenus.set(menuMsg.id, roles);
       await persistentDataHandler.saveData();
       await interaction.reply({
         content: `Menu created at ${menuMsg.url}`,

@@ -5,7 +5,7 @@ import type { EventHandler } from "../types";
 
 export const messageCreate: EventHandler = {
   event: Events.MessageCreate,
-  async execute(message: Message) {
-    await spoilerMod(message);
+  execute(message: Message) {
+    void spoilerMod(message);
   },
 };
