@@ -79,7 +79,7 @@ export const persistentDataHandler = {
       config.logFile,
       `Reynard Initialised at ${DateTime.local().toLocaleString(
         DateTime.DATETIME_SHORT_WITH_SECONDS
-      )}`
+      )}\n`
     );
     this.initialised = true;
   },
