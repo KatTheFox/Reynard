@@ -29,10 +29,10 @@ export async function handleReaction(
     if (guild === undefined) void log("Reaction role menu was not in a guild!");
     else {
       const member = await guild.members.fetch(user);
+      const fetchedRole = (await guild.roles.fetch(role)) ?? { name: role };
       if (add) {
         void log(
-          // eslint-disable-next-line unicorn/no-await-expression-member
-          `adding role ${(await guild.roles.fetch(role))?.name} to member ${
+          `adding role ${fetchedRole.name} to member ${
             member.nickname ?? member.displayName
           }`
         );
@@ -43,8 +43,7 @@ export async function handleReaction(
         }
       } else {
         void log(
-          // eslint-disable-next-line unicorn/no-await-expression-member
-          `removing role ${(await guild.roles.fetch(role))?.name} from member ${
+          `removing role ${fetchedRole.name} from member ${
             member.nickname ?? member.displayName
           }`
         );
@@ -54,8 +53,6 @@ export async function handleReaction(
           console.error(error);
         }
       }
-      // await (add ? member.roles.add(role, "Reaction Role Addition") : member.roles.remove(role,
-      // "Reaction Role Removal"));
     }
   }
 }
