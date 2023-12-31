@@ -204,9 +204,8 @@ export const poll: Command = {
         new EmbedBuilder().setTitle(responses.question).setDescription(body),
       ],
     });
-    for (let i = 0; i < responses.options.length; i++)
-      // eslint-disable-next-line no-await-in-loop, @typescript-eslint/no-non-null-assertion
-      await pollMsg.react(emoji[i]!);
+    for await (const v of emoji.slice(0, responses.options.length))
+      await pollMsg.react(v);
 
     if (responses.minutes > 0) void pollClose(responses, pollMsg);
 

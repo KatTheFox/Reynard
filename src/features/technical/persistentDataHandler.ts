@@ -9,6 +9,7 @@ import {
 } from "fs-extra";
 import { join } from "node:path";
 import { config as deConfig } from "dotenv";
+import { DateTime } from "luxon";
 
 interface PersistentData {
   roleMenus: Map<Message, Map<string, Role>>;
@@ -21,6 +22,7 @@ export const persistentData: PersistentData = {
 export const config = {
   token: "",
   appID: "",
+  logFile: "",
 };
 function replacer(_: string, value: unknown) {
   if (value instanceof Map)
@@ -62,6 +64,7 @@ function jsonParse(str: string): unknown {
   return JSON.parse(str, reviver);
 }
 export const persistentDataHandler = {
+  initialised: false,
   dataDir: "",
   async init(): Promise<void> {
     deConfig();
@@ -70,6 +73,15 @@ export const persistentDataHandler = {
       throw new Error("Expected a data dir in the environment!");
     await this.loadData();
     await this.loadConfig();
+    if (config.logFile === "")
+      config.logFile = join(this.dataDir, "reynard.log");
+    await writeFile(
+      config.logFile,
+      `Reynard Initialised at ${DateTime.local().toLocaleString(
+        DateTime.DATETIME_SHORT_WITH_SECONDS
+      )}`
+    );
+    this.initialised = true;
   },
   async saveData(): Promise<void> {
     if (!(await pathExists(this.dataDir)))

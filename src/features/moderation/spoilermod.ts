@@ -2,7 +2,6 @@ import type { Message } from "discord.js";
 import { persistentData } from "../technical/persistentDataHandler";
 
 export async function spoilerMod(message: Message): Promise<void> {
-  console.log(persistentData.spoilerChannels);
   if (await isActionNeeded(message)) {
     const { author, channel } = message;
     try {

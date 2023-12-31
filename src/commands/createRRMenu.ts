@@ -6,7 +6,12 @@ import type {
   Role,
   TextChannel,
 } from "discord.js";
-import { ChannelType, SlashCommandBuilder, parseEmoji } from "discord.js";
+import {
+  ChannelType,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+  parseEmoji,
+} from "discord.js";
 import {
   persistentData,
   persistentDataHandler,
@@ -160,6 +165,7 @@ export const createRRMenu: Command = {
         .setDescription("The eleventh role to assign")
         .setRequired(false)
     )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator) // fix later for more granularity
     .setDescription("Creates a reaction role message"),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const options = await getOptions(interaction);
@@ -171,7 +177,6 @@ export const createRRMenu: Command = {
       return;
     }
     let body = `**Reaction Roles: ${options.title}**\nReact to give yourself the corresponding role. Remove the reaction to remove the role.`;
-    for (const x of options.roles.keys()) console.log(x);
     if (!allValidEmoji(options.roles.keys())) {
       await interaction.reply({
         content: "Invalid emoji provided!",

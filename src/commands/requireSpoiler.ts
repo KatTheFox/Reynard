@@ -1,4 +1,8 @@
-import { ChannelType, SlashCommandBuilder } from "discord.js";
+import {
+  ChannelType,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from "discord.js";
 import type { Command } from "../types";
 import {
   persistentData,
@@ -27,6 +31,7 @@ export const requireSpoiler: Command = {
         )
         .setRequired(false)
     )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator) // Change later for more granularity
     .setDescription(
       "Adds or removes a channel from the moderation rule 'require spoiler'"
     ),

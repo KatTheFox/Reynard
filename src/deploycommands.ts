@@ -5,6 +5,7 @@ import {
   config,
   persistentDataHandler,
 } from "./features/technical/persistentDataHandler";
+import { log } from "./features/technical/logger";
 
 persistentDataHandler
   .init()
@@ -18,11 +19,11 @@ persistentDataHandler
       const rest = new REST({ version: "10" }).setToken(config.token);
       void (async () => {
         try {
-          console.log(`Started deploying ${json.length} commands`);
+          void log(`Started deploying ${json.length} commands`);
           void (await rest.put(Routes.applicationCommands(config.appID), {
             body: json,
           }));
-          console.log(`Successfully deployed ${json.length} commands`);
+          void log(`Successfully deployed ${json.length} commands`);
         } catch (error) {
           console.error(error);
         }

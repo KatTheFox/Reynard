@@ -9,7 +9,7 @@ import {
 function checkMenuDeleted() {
   for (const [message, _] of persistentData.roleMenus)
     message.fetch().catch((error) => {
-      console.log(error);
+      console.error(error);
       persistentData.roleMenus.delete(message);
     });
 }
