@@ -8,7 +8,7 @@ import { Events } from "discord.js";
 import type { EventHandler } from "../types";
 import { handleReaction } from "../features/rrHandler";
 
-export const messageReactionAdd: EventHandler = {
+export const messageReactionRemove: EventHandler = {
   event: Events.MessageReactionRemove,
   execute(
     messageReaction: MessageReaction | PartialMessageReaction,

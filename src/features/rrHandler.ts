@@ -18,8 +18,10 @@ export async function handleReaction(
     : rawReaction;
   const user = rawUser.partial ? await rawUser.fetch() : rawUser;
   const roleMenu = persistentData.roleMenus.get(reaction.message.id);
-  if (roleMenu === undefined) return;
-  void log("reaction added to rolemenu!");
+  if (roleMenu === undefined) {
+    void log("rolemenu undefined!");
+    return;
+  }
   const role = roleMenu.get(reaction.emoji.id ?? reaction.emoji.toString());
   if (role !== undefined) {
     const message = await reaction.message.fetch();
@@ -27,9 +29,33 @@ export async function handleReaction(
     if (guild === undefined) void log("Reaction role menu was not in a guild!");
     else {
       const member = await guild.members.fetch(user);
-      await (add
-        ? member.roles.add(role, "Reaction Role Addition")
-        : member.roles.remove(role, "Reaction Role Removal"));
+      if (add) {
+        void log(
+          // eslint-disable-next-line unicorn/no-await-expression-member
+          `adding role ${(await guild.roles.fetch(role))?.name} to member ${
+            member.nickname ?? member.displayName
+          }`
+        );
+        try {
+          await member.roles.add(role, "reaction role addition");
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        void log(
+          // eslint-disable-next-line unicorn/no-await-expression-member
+          `removing role ${(await guild.roles.fetch(role))?.name} from member ${
+            member.nickname ?? member.displayName
+          }`
+        );
+        try {
+          await member.roles.remove(role, "reaction role removal");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      // await (add ? member.roles.add(role, "Reaction Role Addition") : member.roles.remove(role,
+      // "Reaction Role Removal"));
     }
   }
 }

@@ -1,4 +1,3 @@
-import type { Role } from "discord.js";
 import {
   pathExists,
   readJson,
@@ -12,11 +11,11 @@ import { config as deConfig } from "dotenv";
 import { DateTime } from "luxon";
 
 interface PersistentData {
-  roleMenus: Map<string, Map<string, Role>>;
+  roleMenus: Map<string, Map<string, string>>;
   spoilerChannels: Set<string>;
 }
 export const persistentData: PersistentData = {
-  roleMenus: new Map<string, Map<string, Role>>(),
+  roleMenus: new Map<string, Map<string, string>>(),
   spoilerChannels: new Set<string>(),
 };
 export const config = {

@@ -10,7 +10,6 @@ import {
   ChannelType,
   PermissionFlagsBits,
   SlashCommandBuilder,
-  parseEmoji,
 } from "discord.js";
 import {
   persistentData,
@@ -184,15 +183,15 @@ export const createRRMenu: Command = {
       });
       return;
     }
-    const roles = new Map<string, Role>();
+    const roles = new Map<string, string>();
     for (const [emoji, role] of options.roles) {
       body += `\n${emoji}: \`${role.name}\``;
       const emojis = validEmoji(emoji);
-      if (/\p{Extended_Pictographic}/gu.test(emoji) && emojis !== null)
-        roles.set(emojis[0], role);
+      if (/\p{Emoji_Presentation}|\u{20E3}/gu.test(emoji) && emojis !== null)
+        roles.set(emoji, role.id);
       else if (emojis !== null) {
-        const id = parseEmoji(emoji)?.id ?? undefined;
-        if (id !== undefined) roles.set(id, role);
+        const id = /<a?:.+?:(\d+)>/gu.exec(emoji)?.[1];
+        if (id !== undefined) roles.set(id, role.id);
       }
     }
     try {
@@ -215,7 +214,9 @@ export const createRRMenu: Command = {
   },
 };
 function validEmoji(s: string) {
-  return s.match(/<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu);
+  // Apparently, discord emoji snowflakes are of inconsistent length. Because why would they be
+  // consistent. This will probably cause issues later!
+  return s.match(/<a?:.+?:\d+>|\p{Emoji_Presentation}|\u{20E3}/gu);
 }
 function allValidEmoji(srcEmoji: IterableIterator<string>): boolean {
   for (const emoji of srcEmoji) if (!validEmoji(emoji)) return false;
