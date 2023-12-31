@@ -24,6 +24,17 @@ export const poll: Command = {
         .setDescription("What is the question")
         .setRequired(true)
     )
+    .addChannelOption((option) =>
+      option
+        .setRequired(true)
+        .setDescription("What channel to create the poll in")
+        .setName("channel")
+        .addChannelTypes(
+          ChannelType.GuildText,
+          ChannelType.PublicThread,
+          ChannelType.PrivateThread
+        )
+    )
     .addStringOption((option) =>
       option
         .setName("option1")
@@ -35,17 +46,6 @@ export const poll: Command = {
         .setName("option2")
         .setDescription("The second poll option.")
         .setRequired(true)
-    )
-    .addChannelOption((option) =>
-      option
-        .setRequired(false)
-        .setDescription("What channel to create the poll in")
-        .setName("channel")
-        .addChannelTypes(
-          ChannelType.GuildText,
-          ChannelType.PublicThread,
-          ChannelType.PrivateThread
-        )
     )
     .addIntegerOption((option) =>
       option
@@ -216,7 +216,7 @@ export const poll: Command = {
   },
 };
 async function pollClose(responses: PollConfig, msg: Message) {
-  await delay(responses.minutes * 5000);
+  await delay(responses.minutes * 60_000);
   const pollMsg = await msg.fetch(true);
   const reactions = msg.reactions.cache;
   let highestn = 0;
