@@ -7,7 +7,7 @@ Reynard is a multi-purpose discord bot, made out of frustration with the state o
 - Reynard is free and open source. No subscriptions, no required voting, and an open GPLv3 license.
 - Reynard is developed by me, in my free time. Its features are based on what I, personally need. If you have a feature request, open an issue and tag it as such- or feel free to add it yourself and submit a PR.
 - Reynard is not a pre-hosted bot. You won't find a discord bot link here- you need to host your own instance somewhere. I don't have the money to host a big instance, so if you want to use the bot you'll need to figure out that part yourself.
-- Reynard is not an income stream for me. In fact by design there's no way for me to monetize it. It is a personal project that will be developed at my own lesiure, so don't expect it to become some massive thing.
+- Reynard is not an income stream for me. In fact by design there's no way for me to monetize it. It is a personal project that will be developed at my own lesiure, so don't expect it to be a massive kitchen-sink bot that covers all use cases. I also will not make any promises about support, use at your own risk etc.
 
 ## How do I set this up?
 
