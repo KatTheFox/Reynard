@@ -5,6 +5,11 @@ export async function spoilerMod(message: Message): Promise<void> {
   if (await isActionNeeded(message)) {
     const { author, channel } = message;
     try {
+      await message.fetch();
+    } catch {
+      return;
+    }
+    try {
       await Promise.all([
         channel.send(
           `<@${author.id}>, remember to spoiler tag all attachments in this channel.`
@@ -26,7 +31,23 @@ async function isActionNeeded(message: Message): Promise<boolean> {
     if (msg.attachments.size === 0 && msg.embeds.length === 0) return false;
     for (const [_, attachment] of msg.attachments)
       if (!attachment.spoiler) return true;
-    if (msg.embeds.length > 0 && !re.test(msg.content)) return true; // Discord doesn't provide a way to tell if an embed is spoilered; therefore, we have to naïvely check if there's a spoilered url. This does mean someone could get around the automod by including a spoilered url and also an unspoilered embed, but I don't see a way to fix this.
+    // Discord doesn't provide a way to check if an embed is spoilered. To work around this, I have
+    // to get all the urls in the message, then check if every embed matches a spoilered url.
+
+    // What the fuck. Discord handles embeds poorly and spoiling any url will actually spoil the
+    // embed. Discord is a functional website. Anyway this does mean my code doesn't match Discord's
+    // implementation 100% but mine is more correct so I'm leaving it.
+    if (msg.embeds.length > 0) {
+      const urls = msg.content.match(re);
+      if (urls === null) return false;
+      for (const embed of msg.embeds) {
+        let { url } = embed;
+        if (url !== null) {
+          url = `||${url.replaceAll(/^\|\||\|\|$/g, "")}||`;
+          if (!urls.includes(url)) return true;
+        }
+      }
+    }
     return false;
   } catch (error) {
     console.error(error);
